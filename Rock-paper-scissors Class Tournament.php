@@ -158,7 +158,7 @@ class Game
             $p2choise = $p2->getSelection();
 
             if ($p1choise === $p2choise) {
-                echo "| $turn | tie\n";
+                echo "| $turn | tie both chose {$p1choise->getElement()}\n";
             } else if ($p1choise->isStrongAgainst($p2choise)) {
                 echo "| $turn | {$p1->getName()} won using {$p1choise->getElement()} \n";
                 $p1->setIsWinner();
