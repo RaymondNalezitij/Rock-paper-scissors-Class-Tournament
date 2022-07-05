@@ -79,11 +79,6 @@ class Player
         return $this->isPlayer;
     }
 
-    public function setIsPlayer(bool $isPlayer): void
-    {
-        $this->isPlayer = $isPlayer;
-    }
-
 }
 
 class Game
@@ -115,21 +110,8 @@ class Game
 
     }
 
-    public function displayElements(): void
-    {
-        foreach ($this->elements as $key => $element) {
-            echo "[$key] {$element->getElement()} ";
-        }
-    }
-
-    public function getElements(): array
-    {
-        return $this->elements;
-    }
-
     public function run()
     {
-
         $p1 = $this->player1;
         $p2 = $this->player2;
         $p1->setIsWinner(0);
@@ -141,15 +123,21 @@ class Game
         do {
 
             if ($p1->getIsPlayer()) {
-                echo "{$p1->getName()} select an element: ";
-                $p1->setSelection($this->elements[(int)readline($this->displayElements())]);
+                do {
+                    echo "{$p1->getName()} select an element: ";
+                    $playerChoice = (int)readline($this->displayElements());
+                } while ($playerChoice < 0 || $playerChoice > 2);
+                $p1->setSelection($this->elements[$playerChoice]);
             } else {
                 $p1->setSelection($this->elements[rand(0, 2)]);
             }
 
             if ($p2->getIsPlayer()) {
-                echo "{$p2->getName()} select an element: ";
-                $p2->setSelection($this->elements[(int)readline($this->displayElements())]);
+                do {
+                    echo "{$p1->getName()} select an element: ";
+                    $playerChoice = (int)readline($this->displayElements());
+                } while ($playerChoice < 0 || $playerChoice > 2);
+                $p1->setSelection($this->elements[$playerChoice]);
             } else {
                 $p2->setSelection($this->elements[rand(0, 2)]);
             }
@@ -158,7 +146,7 @@ class Game
             $p2choise = $p2->getSelection();
 
             if ($p1choise === $p2choise) {
-                echo "| $turn | tie, both chose {$p1choise->getElement()}\n";
+                echo "| $turn | tie both chose {$p1choise->getElement()}\n";
             } else if ($p1choise->isStrongAgainst($p2choise)) {
                 echo "| $turn | {$p1->getName()} won using {$p1choise->getElement()} \n";
                 $p1->setIsWinner();
@@ -175,9 +163,14 @@ class Game
         } else {
             return $p2;
         }
-
     }
 
+    public function displayElements(): void
+    {
+        foreach ($this->elements as $key => $element) {
+            echo "[$key] {$element->getElement()} ";
+        }
+    }
 }
 
 class Tournament
@@ -192,42 +185,42 @@ class Tournament
         echo "\nRound 1\n";
         echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n";
 
-        $game = new Game(new Player(readline("Enter user name: "), true), new Player("Aldis"));
-        $this->winner1[] = $game->run();
+        $game1 = new Game(new Player(readline("Enter user name: "), true), new Player("Aldis"));
+        $this->winner1[] = $game1->run();
         print_r($this->winner1[0]->getName() . " has won\n");
 
-        $game = new Game(new Player("Patrīcija"), new Player("Mārtiņš"));
-        $this->winner1[] = $game->run();
+        $game2 = new Game(new Player("Patrīcija"), new Player("Mārtiņš"));
+        $this->winner1[] = $game2->run();
         print_r($this->winner1[1]->getName() . " has won\n");
 
-        $game = new Game(new Player("Rihards"), new Player("Marta"));
-        $this->winner1[] = $game->run();
+        $game3 = new Game(new Player("Rihards"), new Player("Marta"));
+        $this->winner1[] = $game3->run();
         print_r($this->winner1[2]->getName() . " has won\n");
 
-        $game = new Game(new Player("Valters"), new Player("Anna"));
-        $this->winner1[] = $game->run();
+        $game4 = new Game(new Player("Valters"), new Player("Anna"));
+        $this->winner1[] = $game4->run();
         print_r($this->winner1[3]->getName() . " has won\n");
 
         echo "\nRound 2\n";
         echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n";
 
-        $game = new Game($this->winner1[0], $this->winner1[1]);
-        $this->winner2[] = $game->run();
+        $game5 = new Game($this->winner1[0], $this->winner1[1]);
+        $this->winner2[] = $game5->run();
         print_r($this->winner2[0]->getName() . " has won\n");
 
-        $game = new Game($this->winner1[2], $this->winner1[3]);
-        $this->winner2[] = $game->run();
+        $game6 = new Game($this->winner1[2], $this->winner1[3]);
+        $this->winner2[] = $game6->run();
         print_r($this->winner2[1]->getName() . " has won\n");
 
         echo "\nRound 3\n";
         echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n";
 
-        $game = new Game($this->winner2[0], $this->winner2[1]);
-        $this->winner3[] = $game->run();
+        $game7 = new Game($this->winner2[0], $this->winner2[1]);
+        $this->winner3[] = $game7->run();
+
         print_r($this->winner3[0]->getName() . " has won the tournament!\n");
 
     }
-
 }
 
 $tournament = new Tournament();
