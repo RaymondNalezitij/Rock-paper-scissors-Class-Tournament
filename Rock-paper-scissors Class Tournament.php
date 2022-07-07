@@ -38,9 +38,10 @@ class Element
 
 class Player
 {
+
     private string $name;
     private ?Element $selection = null;
-    private int $isWinner = 0;
+    private int $score = 0;
     private bool $isPlayer;
 
     public function __construct($name, $isPlayer = false)
@@ -64,14 +65,14 @@ class Player
         return $this->name;
     }
 
-    public function getIsWinner(): int
+    public function getScore(): int
     {
-        return $this->isWinner;
+        return $this->score;
     }
 
-    public function setIsWinner($number = 1): void
+    public function setScore($number = 1): void
     {
-        $this->isWinner = ($this->isWinner + 1) * $number;
+        $this->score = ($this->score + 1) * $number;
     }
 
     public function getIsPlayer()
@@ -114,8 +115,10 @@ class Game
     {
         $p1 = $this->player1;
         $p2 = $this->player2;
-        $p1->setIsWinner(0);
-        $p2->setIsWinner(0);
+        $p1->setScore(0);
+        $p2->setScore(0);
+
+        $winScore = 2;
 
         $turn = 1;
         echo "\n";
@@ -149,19 +152,19 @@ class Game
                 echo "| $turn | tie both chose {$p1choise->getElement()}\n";
             } else if ($p1choise->isStrongAgainst($p2choise)) {
                 echo "| $turn | {$p1->getName()} won using {$p1choise->getElement()} \n";
-                $p1->setIsWinner();
+                $p1->setScore();
             } else {
                 echo "| $turn | {$p2->getName()} won using {$p2choise->getElement()} \n";
-                $p2->setIsWinner();
+                $p2->setScore();
             }
             $turn++;
 
-        } while ($p1->getIsWinner() <= 1 && $p2->getIsWinner() <= 1);
+        } while ($p1->getScore() < $winScore && $p2->getScore() < $winScore);
 
-        if ($p1->getIsWinner() == 2) {
-            return $p1;
+        if ($p1->getScore() == 2) {
+            return [$p1, $p2];
         } else {
-            return $p2;
+            return [$p2, $p1];
         }
     }
 
@@ -171,14 +174,15 @@ class Game
             echo "[$key] {$element->getElement()} ";
         }
     }
+
 }
 
 class Tournament
 {
 
-    private array $winner1;
-    private array $winner2;
-    private array $winner3;
+    private array $gameSet1; //winner is [$i][0] and loser is [$i][1] <- $i = game number
+    private array $gameSet2; //winner is [$i][0] and loser is [$i][1] <- $i = game number
+    private array $gameSet3; //winner is [$i][0] and loser is [$i][1] <- $i = game number
 
     public function tournament()
     {
@@ -186,41 +190,42 @@ class Tournament
         echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n";
 
         $game1 = new Game(new Player(readline("Enter user name: "), true), new Player("Aldis"));
-        $this->winner1[] = $game1->run();
-        print_r($this->winner1[0]->getName() . " has won\n");
+        $this->gameSet1[] = $game1->run();
+        print_r($this->gameSet1[0][0]->getName() . " has won {$this->gameSet1[0][0]->getScore()} to {$this->gameSet1[0][1]->getScore()}\n");
 
         $game2 = new Game(new Player("Patrīcija"), new Player("Mārtiņš"));
-        $this->winner1[] = $game2->run();
-        print_r($this->winner1[1]->getName() . " has won\n");
+        $this->gameSet1[] = $game2->run();
+        print_r($this->gameSet1[1][0]->getName() . " has won {$this->gameSet1[1][0]->getScore()} to {$this->gameSet1[1][1]->getScore()}\n");
 
         $game3 = new Game(new Player("Rihards"), new Player("Marta"));
-        $this->winner1[] = $game3->run();
-        print_r($this->winner1[2]->getName() . " has won\n");
+        $this->gameSet1[] = $game3->run();
+        print_r($this->gameSet1[2][0]->getName() . " has won {$this->gameSet1[2][0]->getScore()} to {$this->gameSet1[2][1]->getScore()}\n");
 
         $game4 = new Game(new Player("Valters"), new Player("Anna"));
-        $this->winner1[] = $game4->run();
-        print_r($this->winner1[3]->getName() . " has won\n");
+        $this->gameSet1[] = $game4->run();
+        print_r($this->gameSet1[3][0]->getName() . " has won {$this->gameSet1[3][0]->getScore()} to {$this->gameSet1[3][1]->getScore()}\n");
 
         echo "\nRound 2\n";
         echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n";
 
-        $game5 = new Game($this->winner1[0], $this->winner1[1]);
-        $this->winner2[] = $game5->run();
-        print_r($this->winner2[0]->getName() . " has won\n");
+        $game5 = new Game($this->gameSet1[0][0], $this->gameSet1[1][0]);
+        $this->gameSet2[] = $game5->run();
+        print_r($this->gameSet2[0][0]->getName() . " has won {$this->gameSet2[0][0]->getScore()} to {$this->gameSet2[0][1]->getScore()}\n");
 
-        $game6 = new Game($this->winner1[2], $this->winner1[3]);
-        $this->winner2[] = $game6->run();
-        print_r($this->winner2[1]->getName() . " has won\n");
+        $game6 = new Game($this->gameSet1[2][0], $this->gameSet1[3][0]);
+        $this->gameSet2[] = $game6->run();
+        print_r($this->gameSet2[1][0]->getName() . " has won {$this->gameSet2[1][0]->getScore()} to {$this->gameSet2[1][1]->getScore()}\n");
 
         echo "\nRound 3\n";
         echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n";
 
-        $game7 = new Game($this->winner2[0], $this->winner2[1]);
-        $this->winner3[] = $game7->run();
-
-        print_r($this->winner3[0]->getName() . " has won the tournament!\n");
+        $game7 = new Game($this->gameSet2[0][0], $this->gameSet2[1][0]);
+        $this->gameSet3[] = $game7->run();
+        print_r($this->gameSet3[0][0]->getName() . " has won {$this->gameSet3[0][0]->getScore()} to {$this->gameSet3[0][1]->getScore()}\n\n");
+        print_r($this->gameSet3[0][0]->getName() . " has won the tournament!\n");
 
     }
+
 }
 
 $tournament = new Tournament();
